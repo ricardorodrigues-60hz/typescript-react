@@ -3,12 +3,43 @@ import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import './App.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 function App() {
+  const greeting = import.meta.env.VITE_GREETEING
+
   const [count, setCount] = useState(0)
 
+  // Use this state variable in the UI
+  const [ipAddress, setIpAddress] = useState("")
+
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+
+      // Use the environment variable here
+      const apiUrl = import.meta.env.VITE_API_URL
+      
+      try {
+        const response = await fetch(`${apiUrl}?format=json`);
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setIpAddress(data.ip);
+      } catch (err) {
+        setIpAddress("NOT AVAILABLE");
+        console.log(err.message);
+      };
+    }
+
+    fetchIpAddress();
+  }, [])
   return (
     <>
+    <Header />
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -17,6 +48,8 @@ function App() {
         </div>
         <div>
           <h1>Get started</h1>
+          <h2>{greeting}</h2>
+          <h3>Your IP address is{ipAddress}</h3>
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
@@ -115,6 +148,7 @@ function App() {
 
       <div className="ticks"></div>
       <section id="spacer"></section>
+      <Footer />
     </>
   )
 }
